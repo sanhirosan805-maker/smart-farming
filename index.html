@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Farming - Precision Agriculture Dashboard</title>
+  
+  <!-- Chart.js & FontAwesome (Grafik dan Ikon) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #f1f5f9; color: #1e293b; padding: 20px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+
+    /* Header Styling */
+    header {
+      background: linear-gradient(135deg, #15803d, #047857);
+      color: white; padding: 20px; border-radius: 12px; margin-bottom: 20px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    header h1 { font-size: 1.4rem; display: flex; align-items: center; gap: 10px; }
+
+    .status-badge {
+      background-color: #22c55e; color: white; padding: 6px 14px; border-radius: 20px;
+      font-size: 0.85rem; font-weight: bold; display: inline-flex; align-items: center; gap: 6px;
+    }
+    .status-badge.warning { background-color: #ef4444; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+
+    /* Layout Grid */
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px; }
+    .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+    .card-title { font-size: 0.95rem; font-weight: bold; color: #334155; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .card-value { font-size: 2rem; font-weight: bold; color: #0f172a; }
+
+    /* Buttons & Controls */
+    .control-panel { display: flex; flex-direction: column; gap: 10px; }
+    .btn {
+      padding: 10px 14px; border: none; border-radius: 8px; font-size: 0.85rem; font-weight: bold;
+      cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-pest { background-color: #0284c7; color: white; }
+    .btn-pest:hover { background-color: #0369a1; }
+    .btn-weed { background-color: #d97706; color: white; }
+    .btn-weed:hover { background-color: #b45309; }
+    .btn-spray { background-color: #16a34a; color: white; }
+
+    .notification-box {
+      background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 12px 16px;
+      border-radius: 6px; color: #991b1b; margin-bottom: 20px; display: none;
+    }
+
+    /* Terminal Log */
+    .log-box {
+      background-color: #0f172a; color: #38bdf8; border-radius: 6px; padding: 12px;
+      font-family: 'Consolas', 'Courier New', Courier, monospace; font-size: 0.8rem; height: 180px; overflow-y: auto;
+      border: 1px solid #1e293b;
+    }
+
+    .progress-bg { background-color: #e2e8f0; border-radius: 8px; height: 14px; width: 100%; overflow: hidden; margin-top: 8px; }
+    .progress-fill { background-color: #16a34a; height: 100%; width: 0%; transition: width 0.5s ease; }
+    .chart-container { position: relative; height: 300px; width: 100%; }
+
+    /* Tabel Klasifikasi OPT */
+    .opt-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
+    .opt-table th, .opt-table td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+    .opt-table th { background-color: #f8fafc; color: #475569; }
+    .badge { padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+    .badge-hama { background-color: #fecaca; color: #991b1b; }
+    .badge-gulma { background-color: #fef08a; color: #854d0e; }
+    .badge-sahabat { background-color: #bbf7d0; color: #166534; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <h1><i class="fa-solid fa-microchip"></i> Smart Farming - Precision OPT Control</h1>
+      <div id="system-status" class="status-badge">
+        <i class="fa-solid fa-circle-check"></i> Status: Aman (Sawah Terkendali)
+      </div>
+    </header>
+
+    <!-- Alert Box -->
+    <div id="alert-box" class="notification-box">
+      <i class="fa-solid fa-triangle-exclamation"></i> <span id="alert-text">Peringatan!</span>
+    </div>
+
+    <!-- Ringkasan Indikator Utama -->
+    <div class="grid">
+      <!-- METER HAMA -->
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-bug"></i> Hama Serangga Aktif</div>
+        <div id="pest-count" class="card-value">0 ekor</div>
+        <div style="font-size: 0.75rem; color: #dc2626; font-weight: bold; margin-top: 4px;">Batas Toleransi: 20 Ekor</div>
+      </div>
+
+      <!-- METER GULMA -->
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-plant-wilt"></i> Cakupan Gulma (Rumput)</div>
+        <div id="weed-count" class="card-value">5%</div>
+        <div class="progress-bg"><div id="weed-bar" class="progress-fill" style="width: 5%;"></div></div>
+        <div style="font-size: 0.75rem; color: #d97706; font-weight: bold; margin-top: 4px;">Batas Toleransi: 15% Area</div>
+      </div>
+
+      <!-- STATUS SPRAYER -->
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-shower"></i> Status Sprayer Dosis</div>
+        <div id="sprayer-status" class="card-value" style="font-size: 1.1rem; color: #64748b;">STANDBY</div>
+        <div id="chemical-type" style="font-size: 0.75rem; color: #0284c7; margin-top: 4px;">Pemicu Relay: Off</div>
+      </div>
+    </div>
+
+    <!-- Grafik & Control Log -->
+    <div class="grid" style="grid-template-columns: 2fr 1fr;">
+      <!-- Grafik Real-time -->
+      <div class="card">
+        <div class="card-title"><i class="fa-solid fa-chart-line"></i> Grafik Real-Time & Threshold (Batas)</div>
+        <div class="chart-container"><canvas id="optChart"></canvas></div>
+      </div>
+
+      <!-- Simulator Lapangan / Kontrol -->
+      <div class="card control-panel">
+        <div class="card-title"><i class="fa-solid fa-gamepad"></i> Simulator / Kontrol Manual</div>
+        
+        <button class="btn btn-pest" onclick="simulatePest()">
+          <i class="fa-solid fa-plus"></i> +10 Hama Serangga
+        </button>
+
+        <button class="btn btn-weed" onclick="simulateWeed()">
+          <i class="fa-solid fa-wheat-awn-circle-exclamation"></i> +10% Pertumbuhan Gulma
+        </button>
+
+        <button id="btn-spray-toggle" class="btn btn-spray" onclick="toggleManualSpray()">
+          <i class="fa-solid fa-spray-can"></i> Semprot Manual
+        </button>
+
+        <div style="font-size: 0.8rem; font-weight: bold; color: #475569; margin-top: 4px;">
+          Audit Trail / Catatan Waktu Detik:
+        </div>
+        <div id="activity-log" class="log-box">
+          > System Dashboard initialized...<br>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabel Identifikasi OPT -->
+    <div class="card">
+      <div class="card-title"><i class="fa-solid fa-book-open"></i> Klasifikasi OPT (Organisme Pengganggu Tumbuhan)</div>
+      <table class="opt-table">
+        <thead>
+          <tr>
+            <th>Organisme</th>
+            <th>Kategori Klasifikasi</th>
+            <th>Dampak Terhadap Padi</th>
+            <th>Tindakan IoT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Wereng / Walangsangit</strong></td>
+            <td><span class="badge badge-hama">HAMA</span></td>
+            <td>Isap cairan tanaman sampai kering/hampa.</td>
+            <td>Lampu Pemikat + Sprayer Pestisida Otomatis.</td>
+          </tr>
+          <tr>
+            <td><strong>Rumput Teki / Eceng Padi</strong></td>
+            <td><span class="badge badge-gulma">GULMA</span></td>
+            <td>Mencuri air, sinar matahari, dan pupuk.</td>
+            <td>Penyemprotan Herbisida Terukur (>15%).</td>
+          </tr>
+          <tr>
+            <td><strong>Tikus Sawah</strong></td>
+            <td><span class="badge badge-hama">HAMA</span></td>
+            <td>Merusak batang & rumpun padi.</td>
+            <td>Sensor PIR + Gelombang Ultrasonik.</td>
+          </tr>
+          <tr>
+            <td><strong>Laba-laba / Capung</strong></td>
+            <td><span class="badge badge-sahabat">SAHABAT PETANI</span></td>
+            <td>Memakan serangga hama secara alami.</td>
+            <td><strong>DILINDUNGI</strong> (Gunakan ambang batas).</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <script>
+    // Variable Data Utama
+    let pestCount = 0;
+    let weedPercentage = 5;
+    let pestThreshold = 20;  // Batas Hama
+    let weedThreshold = 15;  // Batas Gulma
+    let isSpraying = false;
+
+    // Chart.js Setup dengan 4 Garis (Hama, Batas Hama, Gulma, Batas Gulma)
+    const ctx = document.getElementById('optChart').getContext('2d');
+    const optChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [
+          { label: 'Populasi Hama (Ekor)', data: [], borderColor: '#0284c7', backgroundColor: 'rgba(2, 132, 199, 0.08)', fill: true, tension: 0.3 },
+          { label: 'Batas Maks Hama (20)', data: [], borderColor: '#dc2626', borderWidth: 2, borderDash: [6, 4], fill: false, pointRadius: 0 },
+          { label: 'Cakupan Gulma (%)', data: [], borderColor: '#d97706', backgroundColor: 'rgba(217, 119, 6, 0.08)', fill: true, tension: 0.3 },
+          { label: 'Batas Maks Gulma (15%)', data: [], borderColor: '#f59e0b', borderWidth: 2, borderDash: [3, 3], fill: false, pointRadius: 0 }
+        ]
+      },
+      options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+    });
+
+    // Helper: Format Waktu Jam:Menit:Detik
+    function getFormattedTime() {
+      const now = new Date();
+      return String(now.getHours()).padStart(2, '0') + ':' +
+             String(now.getMinutes()).padStart(2, '0') + ':' +
+             String(now.getSeconds()).padStart(2, '0');
+    }
+
+    // Helper: Log Terminal
+    function addLog(message, highlight = false) {
+      const logBox = document.getElementById('activity-log');
+      const timeStr = getFormattedTime();
+      const style = highlight ? "color: #facc15; font-weight: bold;" : "";
+      logBox.innerHTML = `<span style="${style}">[${timeStr}] ${message}</span><br>` + logBox.innerHTML;
+    }
+
+    // Update Grafik
+    function updateChart() {
+      const timeStr = getFormattedTime();
+      optChart.data.labels.push(timeStr);
+      
+      optChart.data.datasets[0].data.push(pestCount);
+      optChart.data.datasets[1].data.push(pestThreshold);
+      optChart.data.datasets[2].data.push(weedPercentage);
+      optChart.data.datasets[3].data.push(weedThreshold);
+
+      if (optChart.data.labels.length > 10) {
+        optChart.data.labels.shift();
+        optChart.data.datasets[0].data.shift();
+        optChart.data.datasets[1].data.shift();
+        optChart.data.datasets[2].data.shift();
+        optChart.data.datasets[3].data.shift();
+      }
+      optChart.update();
+    }
+
+    // Update UI Gulma
+    function updateWeedUI() {
+      document.getElementById('weed-count').innerText = weedPercentage + '%';
+      const weedBar = document.getElementById('weed-bar');
+      weedBar.style.width = weedPercentage + '%';
+      weedBar.style.backgroundColor = (weedPercentage >= weedThreshold) ? '#ef4444' : '#16a34a';
+    }
+
+    // Logika Ambang Batas
+    function checkRules() {
+      const alertBox = document.getElementById('alert-box');
+      const alertText = document.getElementById('alert-text');
+      const systemStatus = document.getElementById('system-status');
+
+      let isPestDanger = pestCount >= pestThreshold;
+      let isWeedDanger = weedPercentage >= weedThreshold;
+
+      if (isPestDanger || isWeedDanger) {
+        alertBox.style.display = 'block';
+        systemStatus.className = 'status-badge warning';
+        systemStatus.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Status: WASPADA';
+
+        if (isPestDanger && isWeedDanger) {
+          alertText.innerHTML = '<b>WASPADA GANDA!</b> Hama dan Gulma melebihi batas toleransi!';
+          if (!isSpraying) startSpraying("Pestisida + Herbisida", "OTOMATIS");
+        } else if (isPestDanger) {
+          alertText.innerHTML = '<b>WASPADA HAMA!</b> Hama serangga melebihi batas (20 Ekor). Menyemprotkan Pestisida...';
+          if (!isSpraying) startSpraying("Pestisida", "OTOMATIS");
+        } else {
+          alertText.innerHTML = '<b>WASPADA GULMA!</b> Rumput liar melebihi batas (15%). Menyemprotkan Herbisida...';
+          if (!isSpraying) startSpraying("Herbisida", "OTOMATIS");
+        }
+      } else {
+        alertBox.style.display = 'none';
+        systemStatus.className = 'status-badge';
+        systemStatus.innerHTML = '<i class="fa-solid fa-circle-check"></i> Status: Aman (Sawah Terkendali)';
+      }
+    }
+
+    // Proses Penyemprotan & Penurunan Bertahap
+    function startSpraying(chemicalType, mode) {
+      isSpraying = true;
+      document.getElementById('sprayer-status').style.color = '#22c55e';
+      document.getElementById('sprayer-status').innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> AKTIF (${mode})`;
+      document.getElementById('chemical-type').innerText = `Cairan: ${chemicalType}`;
+
+      addLog(`MEMULAI PENYEMPROTAN: ${chemicalType} (${mode})`, true);
+
+      setTimeout(() => {
+        stopSpraying();
+        addLog(`Penyemprotan selesai. Menunggu reaksi kimia...`);
+
+        // Tahap 1 Kematian (2 Detik setelah semprot)
+        setTimeout(() => {
+          let hamaMati = Math.min(pestCount, 5);
+          let gulmaBerkurang = (weedPercentage > 5) ? Math.min(weedPercentage - 5, 5) : 0;
+
+          if (hamaMati > 0 || gulmaBerkurang > 0) {
+            pestCount -= hamaMati;
+            weedPercentage -= gulmaBerkurang;
+
+            document.getElementById('pest-count').innerText = pestCount + ' ekor';
+            updateWeedUI();
+            updateChart();
+
+            addLog(`DETEKSI LOG TAHAP 1: Terdeteksi ${hamaMati} hama mati & gulma berkurang ${gulmaBerkurang}%.`, true);
+          }
+        }, 2000);
+
+        // Tahap 2 Susulan (5 Detik setelah semprot)
+        setTimeout(() => {
+          let hamaMatiSisa = Math.min(pestCount, 8);
+          let gulmaSisa = (weedPercentage > 5) ? Math.min(weedPercentage - 5, 5) : 0;
+
+          if (hamaMatiSisa > 0 || gulmaSisa > 0) {
+            pestCount -= hamaMatiSisa;
+            weedPercentage -= gulmaSisa;
+
+            document.getElementById('pest-count').innerText = pestCount + ' ekor';
+            updateWeedUI();
+            updateChart();
+
+            addLog(`DETEKSI LOG TAHAP 2 (SUSULAN): Terdeteksi ${hamaMatiSisa} hama mati & gulma berkurang ${gulmaSisa}%.`, true);
+            checkRules();
+          }
+        }, 5000);
+
+      }, 3000);
+    }
+
+    function stopSpraying() {
+      isSpraying = false;
+      document.getElementById('sprayer-status').style.color = '#64748b';
+      document.getElementById('sprayer-status').innerHTML = 'STANDBY';
+    }
+
+    function toggleManualSpray() {
+      if (!isSpraying) {
+        startSpraying("Pestisida/Herbisida Combo", "MANUAL");
+      }
+    }
+
+    function simulatePest() {
+      pestCount += 10;
+      document.getElementById('pest-count').innerText = pestCount + ' ekor';
+      addLog(`SIMULASI: +10 Hama Serangga terdeteksi.`);
+      updateChart();
+      checkRules();
+    }
+
+    function simulateWeed() {
+      weedPercentage = Math.min(100, weedPercentage + 10);
+      updateWeedUI();
+      addLog(`SIMULASI: +10% Pertumbuhan Gulma terdeteksi.`);
+      updateChart();
+      checkRules();
+    }
+
+    // Inisialisasi awal
+    updateChart();
+    updateWeedUI();
+  </script>
+</body>
+</html>
