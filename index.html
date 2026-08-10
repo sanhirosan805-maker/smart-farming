@@ -5,11 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Smart Farming - Precision Agriculture Dashboard</title>
   
-  <!-- Chart.js & FontAwesome (Kumpulan Ikon Lengkap) -->
+  <!-- Chart.js & FontAwesome (Grafik dan Ikon) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Crypto-JS untuk Enkripsi Keamanan Password -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -48,7 +46,6 @@
       cursor: pointer; transition: background-color 0.2s; margin-top: 10px;
     }
     .btn-login:hover { background-color: #15803d; }
-    .btn-login:disabled { background-color: #94a3b8; cursor: not-allowed; }
 
     .error-msg {
       color: #ef4444; font-size: 0.8rem; font-weight: bold; margin-top: 12px;
@@ -67,18 +64,7 @@
     }
     header h1 { font-size: 1.4rem; display: flex; align-items: center; gap: 10px; }
 
-    .header-actions { display: flex; align-items: center; gap: 12px; }
-
-    /* Style Tombol Sosial Media / Ikon */
-    .social-btn {
-      color: white; font-size: 1.2rem; text-decoration: none; transition: transform 0.2s, color 0.2s;
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 35px; height: 35px; border-radius: 50%; background: rgba(255, 255, 255, 0.15);
-    }
-    .social-btn:hover { transform: scale(1.15); }
-    .social-btn.yt:hover { color: #ff0000; background: white; }
-    .social-btn.ig:hover { color: #e1306c; background: white; }
-    .social-btn.wa:hover { color: #25d366; background: white; }
+    .header-actions { display: flex; align-items: center; gap: 10px; }
 
     .status-badge {
       background-color: #22c55e; color: white; padding: 6px 14px; border-radius: 20px;
@@ -89,7 +75,7 @@
 
     .btn-logout {
       background-color: rgba(255, 255, 255, 0.2); color: white; border: none;
-      padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: bold;
+      padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold;
       cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 6px;
     }
     .btn-logout:hover { background-color: #ef4444; }
@@ -140,13 +126,13 @@
 </head>
 <body>
 
-  <!-- ================= HALAMAN LOGIN (SECURE) ================= -->
+  <!-- ================= HALAMAN LOGIN ================= -->
   <div id="login-page">
     <div class="login-card">
       <div class="login-header">
-        <i class="fa-solid fa-shield-halved"></i>
+        <i class="fa-solid fa-seedling"></i>
         <h2>Smart Farming IoT</h2>
-        <p>Akses Terenkripsi & Terlindungi</p>
+        <p>Silakan masuk untuk mengakses sistem</p>
       </div>
 
       <form onsubmit="handleLogin(event)">
@@ -156,12 +142,12 @@
         </div>
 
         <div class="input-group">
-          <label><i class="fa-solid fa-key"></i> Password</label>
+          <label><i class="fa-solid fa-lock"></i> Password</label>
           <input type="password" id="password" placeholder="Masukkan password" required>
         </div>
 
-        <button type="submit" id="login-btn" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> Masuk Dashboard</button>
-        <div id="login-error" class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> <span id="error-text">Username/Password Salah!</span></div>
+        <button type="submit" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> Masuk Dashboard</button>
+        <div id="login-error" class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> Username atau Password salah!</div>
       </form>
     </div>
   </div>
@@ -169,73 +155,70 @@
   <!-- ================= HALAMAN DASHBOARD ================= -->
   <div id="dashboard-page">
     <div class="container">
+      <!-- Header -->
       <header>
-        <h1><i class="fa-solid fa-microchip"></i> Smart Farming Dashboard</h1>
-        
+        <h1><i class="fa-solid fa-microchip"></i> Smart Farming - Precision OPT Control</h1>
         <div class="header-actions">
-          <!-- IKON SOCIAL MEDIA DIPASANG DI SINI -->
-          <a href="https://youtube.com" target="_blank" class="social-btn yt" title="Channel YouTube"><i class="fa-brands fa-youtube"></i></a>
-          <a href="https://instagram.com" target="_blank" class="social-btn ig" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
-          <a href="https://wa.me/" target="_blank" class="social-btn wa" title="WhatsApp Kontak"><i class="fa-brands fa-whatsapp"></i></a>
-
           <div id="system-status" class="status-badge">
             <i class="fa-solid fa-circle-check"></i> Status: Aman
           </div>
-
           <button class="btn-logout" onclick="handleLogout()">
             <i class="fa-solid fa-power-off"></i> Keluar
           </button>
         </div>
       </header>
 
+      <!-- Alert Box -->
       <div id="alert-box" class="notification-box">
         <i class="fa-solid fa-triangle-exclamation"></i> <span id="alert-text">Peringatan!</span>
       </div>
 
+      <!-- Ringkasan Indikator Utama -->
       <div class="grid">
         <div class="card">
-          <div class="card-title"><i class="fa-solid fa-bug" style="color: #dc2626;"></i> Hama Serangga Aktif</div>
+          <div class="card-title"><i class="fa-solid fa-bug"></i> Hama Serangga Aktif</div>
           <div id="pest-count" class="card-value">0 ekor</div>
           <div style="font-size: 0.75rem; color: #dc2626; font-weight: bold; margin-top: 4px;">Batas Toleransi: 20 Ekor</div>
         </div>
 
         <div class="card">
-          <div class="card-title"><i class="fa-solid fa-plant-wilt" style="color: #d97706;"></i> Cakupan Gulma (Rumput)</div>
+          <div class="card-title"><i class="fa-solid fa-plant-wilt"></i> Cakupan Gulma (Rumput)</div>
           <div id="weed-count" class="card-value">5%</div>
           <div class="progress-bg"><div id="weed-bar" class="progress-fill" style="width: 5%;"></div></div>
           <div style="font-size: 0.75rem; color: #d97706; font-weight: bold; margin-top: 4px;">Batas Toleransi: 15% Area</div>
         </div>
 
         <div class="card">
-          <div class="card-title"><i class="fa-solid fa-shower" style="color: #0284c7;"></i> Status Sprayer Dosis</div>
+          <div class="card-title"><i class="fa-solid fa-shower"></i> Status Sprayer Dosis</div>
           <div id="sprayer-status" class="card-value" style="font-size: 1.1rem; color: #64748b;">STANDBY</div>
           <div id="chemical-type" style="font-size: 0.75rem; color: #0284c7; margin-top: 4px;">Pemicu Relay: Off</div>
         </div>
       </div>
 
+      <!-- Grafik & Control Log -->
       <div class="grid" style="grid-template-columns: 2fr 1fr;">
         <div class="card">
-          <div class="card-title"><i class="fa-solid fa-chart-line" style="color: #16a34a;"></i> Grafik Real-Time & Threshold</div>
+          <div class="card-title"><i class="fa-solid fa-chart-line"></i> Grafik Real-Time & Threshold</div>
           <div class="chart-container"><canvas id="optChart"></canvas></div>
         </div>
 
         <div class="card control-panel">
-          <div class="card-title"><i class="fa-solid fa-sliders"></i> Simulator / Kontrol Manual</div>
+          <div class="card-title"><i class="fa-solid fa-gamepad"></i> Simulator / Kontrol Manual</div>
           
           <button class="btn btn-pest" onclick="simulatePest()">
-            <i class="fa-solid fa-bug"></i> +10 Hama Serangga
+            <i class="fa-solid fa-plus"></i> +10 Hama Serangga
           </button>
 
           <button class="btn btn-weed" onclick="simulateWeed()">
-            <i class="fa-solid fa-seedling"></i> +10% Pertumbuhan Gulma
+            <i class="fa-solid fa-wheat-awn-circle-exclamation"></i> +10% Pertumbuhan Gulma
           </button>
 
           <button id="btn-spray-toggle" class="btn btn-spray" onclick="toggleManualSpray()">
-            <i class="fa-solid fa-spray-can-sparkles"></i> Semprot Manual
+            <i class="fa-solid fa-spray-can"></i> Semprot Manual
           </button>
 
           <div style="font-size: 0.8rem; font-weight: bold; color: #475569; margin-top: 4px;">
-            <i class="fa-solid fa-list-check"></i> Catatan Waktu (Audit Log):
+            Audit Trail / Catatan Waktu:
           </div>
           <div id="activity-log" class="log-box">
             > System Dashboard initialized...<br>
@@ -243,6 +226,7 @@
         </div>
       </div>
 
+      <!-- Tabel Identifikasi OPT -->
       <div class="card">
         <div class="card-title"><i class="fa-solid fa-book-open"></i> Klasifikasi OPT</div>
         <table class="opt-table">
@@ -287,70 +271,28 @@
   </div>
 
   <script>
-    // DATA AKUN TERENKRIPSI (HASH)
-    // Username: admin
-    const USERNAME_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
-    // Password Asli: santri123 (Sudah di-hash SHA-256)
-    const PASSWORD_HASH = "7a870d0d829988a38a7194602f354bc720a4be3cc1e4f48a0dd36173d19c3620";
+    // Data Akun Login (Bisa kamu ganti di sini)
+    const USERNAME_BENAR = "admin";
+    const PASSWORD_BENAR = "12345";
 
-    let failedAttempts = 0;
-    const maxAttempts = 3;
-
+    // Fungsi Login
     function handleLogin(event) {
       event.preventDefault();
-      
-      if (failedAttempts >= maxAttempts) {
-        showError("Terlalu banyak percobaan! Tombol dikunci 15 detik.");
-        return;
-      }
-
       const userIn = document.getElementById('username').value;
       const passIn = document.getElementById('password').value;
+      const errorMsg = document.getElementById('login-error');
 
-      const userHash = CryptoJS.SHA256(userIn).toString();
-      const passHash = CryptoJS.SHA256(passIn).toString();
-
-      if (userHash === USERNAME_HASH && passHash === PASSWORD_HASH) {
+      if (userIn === USERNAME_BENAR && passIn === PASSWORD_BENAR) {
         document.getElementById('login-page').style.display = 'none';
         document.getElementById('dashboard-page').style.display = 'block';
-        failedAttempts = 0;
         initChart();
-        addLog(`User '${userIn}' berhasil terverifikasi aman.`);
+        addLog(`User '${userIn}' berhasil login.`);
       } else {
-        failedAttempts++;
-        if (failedAttempts >= maxAttempts) {
-          lockLogin();
-        } else {
-          showError(`Username/Password Salah! (Sisa Percobaan: ${maxAttempts - failedAttempts})`);
-        }
+        errorMsg.style.display = 'block';
       }
     }
 
-    function lockLogin() {
-      const btn = document.getElementById('login-btn');
-      btn.disabled = true;
-      showError(`AKSES DIBLOKIR 15 DETIK! Terdeteksi aktivitas mencurigakan.`);
-
-      let secondsLeft = 15;
-      const timer = setInterval(() => {
-        secondsLeft--;
-        if (secondsLeft > 0) {
-          showError(`AKSES DIBLOKIR (${secondsLeft}d). Terdeteksi percobaan retas.`);
-        } else {
-          clearInterval(timer);
-          failedAttempts = 0;
-          btn.disabled = false;
-          document.getElementById('login-error').style.display = 'none';
-        }
-      }, 1000);
-    }
-
-    function showError(msg) {
-      const errorMsg = document.getElementById('login-error');
-      document.getElementById('error-text').innerText = msg;
-      errorMsg.style.display = 'block';
-    }
-
+    // Fungsi Logout
     function handleLogout() {
       document.getElementById('dashboard-page').style.display = 'none';
       document.getElementById('login-page').style.display = 'flex';
@@ -359,6 +301,7 @@
       document.getElementById('login-error').style.display = 'none';
     }
 
+    // Variable Data Utama
     let pestCount = 0;
     let weedPercentage = 5;
     let pestThreshold = 20;
@@ -367,7 +310,7 @@
     let optChart;
 
     function initChart() {
-      if (optChart) return;
+      if (optChart) return; // Mencegah pembuatan ganda
       const ctx = document.getElementById('optChart').getContext('2d');
       optChart = new Chart(ctx, {
         type: 'line',
