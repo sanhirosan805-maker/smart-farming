@@ -8,8 +8,6 @@
   <!-- Chart.js & FontAwesome (Grafik dan Ikon) -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Crypto-JS untuk Enkripsi Keamanan Password -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -48,7 +46,6 @@
       cursor: pointer; transition: background-color 0.2s; margin-top: 10px;
     }
     .btn-login:hover { background-color: #15803d; }
-    .btn-login:disabled { background-color: #94a3b8; cursor: not-allowed; }
 
     .error-msg {
       color: #ef4444; font-size: 0.8rem; font-weight: bold; margin-top: 12px;
@@ -129,13 +126,13 @@
 </head>
 <body>
 
-  <!-- ================= HALAMAN LOGIN (SECURE) ================= -->
+  <!-- ================= HALAMAN LOGIN ================= -->
   <div id="login-page">
     <div class="login-card">
       <div class="login-header">
-        <i class="fa-solid fa-shield-halved"></i>
+        <i class="fa-solid fa-seedling"></i>
         <h2>Smart Farming IoT</h2>
-        <p>Akses Terenkripsi & Terlindungi</p>
+        <p>Silakan masuk untuk mengakses sistem</p>
       </div>
 
       <form onsubmit="handleLogin(event)">
@@ -149,8 +146,8 @@
           <input type="password" id="password" placeholder="Masukkan password" required>
         </div>
 
-        <button type="submit" id="login-btn" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> Masuk Dashboard</button>
-        <div id="login-error" class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> <span id="error-text">Username/Password Salah!</span></div>
+        <button type="submit" class="btn-login"><i class="fa-solid fa-right-to-bracket"></i> Masuk Dashboard</button>
+        <div id="login-error" class="error-msg"><i class="fa-solid fa-circle-exclamation"></i> Username atau Password salah!</div>
       </form>
     </div>
   </div>
@@ -158,6 +155,7 @@
   <!-- ================= HALAMAN DASHBOARD ================= -->
   <div id="dashboard-page">
     <div class="container">
+      <!-- Header -->
       <header>
         <h1><i class="fa-solid fa-microchip"></i> Smart Farming - Precision OPT Control</h1>
         <div class="header-actions">
@@ -170,10 +168,12 @@
         </div>
       </header>
 
+      <!-- Alert Box -->
       <div id="alert-box" class="notification-box">
         <i class="fa-solid fa-triangle-exclamation"></i> <span id="alert-text">Peringatan!</span>
       </div>
 
+      <!-- Ringkasan Indikator Utama -->
       <div class="grid">
         <div class="card">
           <div class="card-title"><i class="fa-solid fa-bug"></i> Hama Serangga Aktif</div>
@@ -195,6 +195,7 @@
         </div>
       </div>
 
+      <!-- Grafik & Control Log -->
       <div class="grid" style="grid-template-columns: 2fr 1fr;">
         <div class="card">
           <div class="card-title"><i class="fa-solid fa-chart-line"></i> Grafik Real-Time & Threshold</div>
@@ -225,6 +226,7 @@
         </div>
       </div>
 
+      <!-- Tabel Identifikasi OPT -->
       <div class="card">
         <div class="card-title"><i class="fa-solid fa-book-open"></i> Klasifikasi OPT</div>
         <table class="opt-table">
@@ -269,72 +271,28 @@
   </div>
 
   <script>
-    // DATA AKUN TERENKRIPSI (HASH)
-    // Username: admin
-    const USERNAME_HASH = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
-    // Password Asli: santri123 (Sudah di-hash SHA-256)
-    const PASSWORD_HASH = "7a870d0d829988a38a7194602f354bc720a4be3cc1e4f48a0dd36173d19c3620";
+    // Data Akun Login (Bisa kamu ganti di sini)
+    const USERNAME_BENAR = "admin";
+    const PASSWORD_BENAR = "12345";
 
-    let failedAttempts = 0;
-    const maxAttempts = 3;
-
+    // Fungsi Login
     function handleLogin(event) {
       event.preventDefault();
-      
-      if (failedAttempts >= maxAttempts) {
-        showError("Terlalu banyak percobaan! Tombol dikunci 15 detik.");
-        return;
-      }
-
       const userIn = document.getElementById('username').value;
       const passIn = document.getElementById('password').value;
+      const errorMsg = document.getElementById('login-error');
 
-      // Konversi inputan user ke Hash SHA-256
-      const userHash = CryptoJS.SHA256(userIn).toString();
-      const passHash = CryptoJS.SHA256(passIn).toString();
-
-      // Pencocokan Hash
-      if (userHash === USERNAME_HASH && passHash === PASSWORD_HASH) {
+      if (userIn === USERNAME_BENAR && passIn === PASSWORD_BENAR) {
         document.getElementById('login-page').style.display = 'none';
         document.getElementById('dashboard-page').style.display = 'block';
-        failedAttempts = 0;
         initChart();
-        addLog(`User '${userIn}' berhasil terverifikasi aman.`);
+        addLog(`User '${userIn}' berhasil login.`);
       } else {
-        failedAttempts++;
-        if (failedAttempts >= maxAttempts) {
-          lockLogin();
-        } else {
-          showError(`Username/Password Salah! (Sisa Percobaan: ${maxAttempts - failedAttempts})`);
-        }
+        errorMsg.style.display = 'block';
       }
     }
 
-    function lockLogin() {
-      const btn = document.getElementById('login-btn');
-      btn.disabled = true;
-      showError(`AKSES DIBLOKIR 15 DETIK! Terdeteksi aktivitas mencurigakan.`);
-
-      let secondsLeft = 15;
-      const timer = setInterval(() => {
-        secondsLeft--;
-        if (secondsLeft > 0) {
-          showError(`AKSES DIBLOKIR (${secondsLeft}d). Terdeteksi percobaan retas.`);
-        } else {
-          clearInterval(timer);
-          failedAttempts = 0;
-          btn.disabled = false;
-          document.getElementById('login-error').style.display = 'none';
-        }
-      }, 1000);
-    }
-
-    function showError(msg) {
-      const errorMsg = document.getElementById('login-error');
-      document.getElementById('error-text').innerText = msg;
-      errorMsg.style.display = 'block';
-    }
-
+    // Fungsi Logout
     function handleLogout() {
       document.getElementById('dashboard-page').style.display = 'none';
       document.getElementById('login-page').style.display = 'flex';
@@ -343,7 +301,7 @@
       document.getElementById('login-error').style.display = 'none';
     }
 
-    // Variable Data Utama Dashboard
+    // Variable Data Utama
     let pestCount = 0;
     let weedPercentage = 5;
     let pestThreshold = 20;
@@ -352,7 +310,7 @@
     let optChart;
 
     function initChart() {
-      if (optChart) return;
+      if (optChart) return; // Mencegah pembuatan ganda
       const ctx = document.getElementById('optChart').getContext('2d');
       optChart = new Chart(ctx, {
         type: 'line',
