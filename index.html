@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -83,7 +84,8 @@
     /* Layout Grid */
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 20px; }
     .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
-    .card-title { font-size: 0.95rem; font-weight: bold; color: #334155; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .card-title { font-size: 0.95rem; font-weight: bold; color: #334155; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; }
+    .card-title-text { display: flex; align-items: center; gap: 8px; }
     .card-value { font-size: 2rem; font-weight: bold; color: #0f172a; }
 
     /* Buttons & Controls */
@@ -97,6 +99,20 @@
     .btn-weed { background-color: #d97706; color: white; }
     .btn-weed:hover { background-color: #b45309; }
     .btn-spray { background-color: #16a34a; color: white; }
+
+    /* Mode Demo Toggle */
+    .btn-demo-toggle {
+      background: none; border: 1px dashed #94a3b8; color: #64748b;
+      padding: 2px 8px; border-radius: 6px; font-size: 0.75rem; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-demo-toggle:hover { background-color: #f1f5f9; color: #0f172a; }
+
+    .demo-controls {
+      display: none; /* Default tersembunyi */
+      flex-direction: column; gap: 10px;
+      padding: 10px; background-color: #f8fafc; border-radius: 8px; border: 1px dashed #cbd5e1;
+    }
 
     .notification-box {
       background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 12px 16px;
@@ -176,20 +192,26 @@
       <!-- Ringkasan Indikator Utama -->
       <div class="grid">
         <div class="card">
-          <div class="card-title"><i class="fa-solid fa-bug"></i> Hama Serangga Aktif</div>
+          <div class="card-title">
+            <span class="card-title-text"><i class="fa-solid fa-bug"></i> Hama Serangga Aktif</span>
+          </div>
           <div id="pest-count" class="card-value">0 ekor</div>
           <div style="font-size: 0.75rem; color: #dc2626; font-weight: bold; margin-top: 4px;">Batas Toleransi: 20 Ekor</div>
         </div>
 
         <div class="card">
-          <div class="card-title"><i class="fa-solid fa-plant-wilt"></i> Cakupan Gulma (Rumput)</div>
+          <div class="card-title">
+            <span class="card-title-text"><i class="fa-solid fa-plant-wilt"></i> Cakupan Gulma (Rumput)</span>
+          </div>
           <div id="weed-count" class="card-value">5%</div>
           <div class="progress-bg"><div id="weed-bar" class="progress-fill" style="width: 5%;"></div></div>
           <div style="font-size: 0.75rem; color: #d97706; font-weight: bold; margin-top: 4px;">Batas Toleransi: 15% Area</div>
         </div>
 
         <div class="card">
-          <div class="card-title"><i class="fa-solid fa-shower"></i> Status Sprayer Dosis</div>
+          <div class="card-title">
+            <span class="card-title-text"><i class="fa-solid fa-shower"></i> Status Sprayer Dosis</span>
+          </div>
           <div id="sprayer-status" class="card-value" style="font-size: 1.1rem; color: #64748b;">STANDBY</div>
           <div id="chemical-type" style="font-size: 0.75rem; color: #0284c7; margin-top: 4px;">Pemicu Relay: Off</div>
         </div>
@@ -200,31 +222,44 @@
         
         <!-- KOTAK GRAFIK HAMA -->
         <div class="card">
-          <div class="card-title" style="color: #0284c7;"><i class="fa-solid fa-bug"></i> Grafik Populasi Hama</div>
+          <div class="card-title" style="color: #0284c7;">
+            <span class="card-title-text"><i class="fa-solid fa-bug"></i> Grafik Populasi Hama</span>
+          </div>
           <div class="chart-container"><canvas id="pestChart"></canvas></div>
         </div>
 
         <!-- KOTAK GRAFIK GULMA -->
         <div class="card">
-          <div class="card-title" style="color: #d97706;"><i class="fa-solid fa-plant-wilt"></i> Grafik Cakupan Gulma</div>
+          <div class="card-title" style="color: #d97706;">
+            <span class="card-title-text"><i class="fa-solid fa-plant-wilt"></i> Grafik Cakupan Gulma</span>
+          </div>
           <div class="chart-container"><canvas id="weedChart"></canvas></div>
         </div>
 
         <!-- KOTAK SIMULATOR & LOG -->
         <div class="card control-panel">
-          <div class="card-title"><i class="fa-solid fa-gamepad"></i> Simulator / Kontrol Manual</div>
+          <div class="card-title">
+            <span class="card-title-text"><i class="fa-solid fa-sliders"></i> Panel Kontrol Sprayer</span>
+            <button class="btn-demo-toggle" onclick="toggleDemoMode()" title="Klik untuk menampilkan/menyembunyikan tombol simulasi saat presentasi">
+              <i class="fa-solid fa-vial"></i> Mode Presentasi
+            </button>
+          </div>
           
-          <button class="btn btn-pest" onclick="simulatePest()">
-            <i class="fa-solid fa-plus"></i> +10 Hama Serangga
-          </button>
-
-          <button class="btn btn-weed" onclick="simulateWeed()">
-            <i class="fa-solid fa-wheat-awn-circle-exclamation"></i> +10% Pertumbuhan Gulma
-          </button>
-
+          <!-- Tombol Penyemprotan Manual (Tetap Tampil) -->
           <button id="btn-spray-toggle" class="btn btn-spray" onclick="toggleManualSpray()">
             <i class="fa-solid fa-spray-can"></i> Semprot Manual
           </button>
+
+          <!-- Tombol Simulasi Hama & Gulma (Sembunyi secara default, bisa dimunculkan saat presentasi) -->
+          <div id="demo-box" class="demo-controls">
+            <div style="font-size: 0.75rem; font-weight: bold; color: #64748b;"><i class="fa-solid fa-flask"></i> Simulasi Input Sensor:</div>
+            <button class="btn btn-pest" onclick="simulatePest()">
+              <i class="fa-solid fa-plus"></i> +10 Hama Serangga
+            </button>
+            <button class="btn btn-weed" onclick="simulateWeed()">
+              <i class="fa-solid fa-wheat-awn-circle-exclamation"></i> +10% Pertumbuhan Gulma
+            </button>
+          </div>
 
           <div style="font-size: 0.8rem; font-weight: bold; color: #475569; margin-top: 4px;">
             Audit Trail / Catatan Waktu:
@@ -238,7 +273,9 @@
 
       <!-- Tabel Identifikasi OPT -->
       <div class="card">
-        <div class="card-title"><i class="fa-solid fa-book-open"></i> Klasifikasi OPT</div>
+        <div class="card-title">
+          <span class="card-title-text"><i class="fa-solid fa-book-open"></i> Klasifikasi OPT</span>
+        </div>
         <table class="opt-table">
           <thead>
             <tr>
@@ -311,6 +348,18 @@
       document.getElementById('login-error').style.display = 'none';
     }
 
+    // Toggle Tampilan Tombol Mode Presentasi/Demo
+    function toggleDemoMode() {
+      const demoBox = document.getElementById('demo-box');
+      if (demoBox.style.display === 'flex') {
+        demoBox.style.display = 'none';
+        addLog(`Mode Presentasi dinonaktifkan.`);
+      } else {
+        demoBox.style.display = 'flex';
+        addLog(`Mode Presentasi diaktifkan.`);
+      }
+    }
+
     // Variable Data Utama
     let pestCount = 0;
     let weedPercentage = 5;
@@ -320,9 +369,9 @@
     let pestChart, weedChart;
 
     function initCharts() {
-      if (pestChart && weedChart) return; // Mencegah pembuatan ganda
+      if (pestChart && weedChart) return;
 
-      // Grafik Hama Tersendiri
+      // Grafik Hama
       const ctxPest = document.getElementById('pestChart').getContext('2d');
       pestChart = new Chart(ctxPest, {
         type: 'line',
@@ -336,7 +385,7 @@
         options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
       });
 
-      // Grafik Gulma Tersendiri
+      // Grafik Gulma
       const ctxWeed = document.getElementById('weedChart').getContext('2d');
       weedChart = new Chart(ctxWeed, {
         type: 'line',
@@ -372,7 +421,6 @@
       if (!pestChart || !weedChart) return;
       const timeStr = getFormattedTime();
 
-      // Update Grafik Hama
       pestChart.data.labels.push(timeStr);
       pestChart.data.datasets[0].data.push(pestCount);
       pestChart.data.datasets[1].data.push(pestThreshold);
@@ -383,7 +431,6 @@
       }
       pestChart.update();
 
-      // Update Grafik Gulma
       weedChart.data.labels.push(timeStr);
       weedChart.data.datasets[0].data.push(weedPercentage);
       weedChart.data.datasets[1].data.push(weedThreshold);
