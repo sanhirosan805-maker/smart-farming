@@ -10,417 +10,356 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <style>
-    * { 
-      box-sizing: border-box; 
-      margin: 0; 
-      padding: 0; 
-      font-family: 'Segoe UI', Roboto, -apple-system, sans-serif; 
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', 'Segoe UI', sans-serif; }
+    
     body { 
-      background-color: #0b0f19; 
-      color: #f1f5f9; 
+      background: linear-gradient(135deg, #e0f2fe 0%, #f0fdf4 100%); 
+      color: #1e293b; 
       min-height: 100vh; 
-      padding: 20px 15px; 
+      padding: 15px; 
     }
 
-    .container { 
-      max-width: 900px; 
-      margin: 0 auto; 
-    }
-
-    /* Header Neon Dark */
-    header {
-      background: #111827; 
-      padding: 18px 24px; 
-      border-radius: 16px; 
-      margin-bottom: 24px;
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      border: 1px solid #1e293b;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-    }
-
-    header h1 { 
-      font-size: 1.25rem; 
-      font-weight: 700;
-      display: flex; 
-      align-items: center; 
-      gap: 12px; 
-      color: #38bdf8; 
-      letter-spacing: 0.5px;
-    }
-
-    .status-badge {
-      background: rgba(34, 197, 94, 0.15); 
-      color: #4ade80; 
-      padding: 6px 16px; 
-      border-radius: 20px;
-      font-size: 0.8rem; 
-      font-weight: 700; 
-      display: inline-flex; 
-      align-items: center; 
-      gap: 8px;
-      border: 1px solid rgba(34, 197, 94, 0.3);
-    }
-
-    /* ================= MENU UTAMA (KOTAK NEON) ================= */
-    #main-menu { 
-      display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-      gap: 20px; 
-    }
-
-    .menu-card {
-      background: #111827; 
-      border-radius: 20px; 
-      padding: 28px 24px; 
-      border: 1px solid #1e293b;
-      cursor: pointer; 
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-      position: relative; 
-      overflow: hidden;
-    }
-
-    .menu-card:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 15px 30px -10px rgba(0, 0, 0, 0.6);
-    }
-
-    .card-hama:hover { border-color: #f87171; box-shadow: 0 0 20px rgba(248, 113, 113, 0.2); }
-    .card-gulma:hover { border-color: #fbbf24; box-shadow: 0 0 20px rgba(251, 191, 36, 0.2); }
-
-    .card-icon { 
-      font-size: 2.8rem; 
-      margin-bottom: 16px; 
-    }
-
-    .card-title { 
-      font-size: 1.25rem; 
-      font-weight: 700; 
-      color: #f8fafc;
-      margin-bottom: 6px;
-    }
-
-    .card-info { 
-      font-size: 0.85rem; 
-      color: #94a3b8; 
-      margin-bottom: 20px; 
-    }
-
-    .card-val { 
-      font-size: 2.5rem; 
-      font-weight: 800; 
-      letter-spacing: -1px;
-    }
-
-    .card-action {
-      margin-top: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #38bdf8;
+    /* ================= HALAMAN LOGIN ================= */
+    #login-page {
       display: flex;
+      justify-content: center;
       align-items: center;
-      gap: 8px;
+      min-height: 90vh;
     }
 
-    /* Warna Aksesibilitas Dark Mode */
-    .card-hama .card-icon, .card-hama .card-val { color: #f87171; }
-    .card-gulma .card-icon, .card-gulma .card-val { color: #fbbf24; }
-
-    /* ================= HALAMAN DETAIL (GRAFIK + KONTROL) ================= */
-    .detail-page { 
-      display: none; 
-      background: #111827; 
-      border-radius: 20px; 
-      padding: 24px; 
-      border: 1px solid #1e293b;
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+    .login-card {
+      background: #ffffff;
+      padding: 35px 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      width: 100%;
+      max-width: 380px;
+      text-align: center;
+      border: 1px solid #e2e8f0;
     }
 
-    .btn-back {
-      background: #1e293b; 
-      color: #38bdf8; 
-      border: 1px solid #334155; 
-      padding: 10px 20px; 
+    .login-card i.logo-icon {
+      font-size: 3.5rem;
+      color: #10b981;
+      margin-bottom: 15px;
+    }
+
+    .login-card h2 {
+      font-size: 1.5rem;
+      color: #0f172a;
+      margin-bottom: 5px;
+    }
+
+    .login-card p {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-bottom: 25px;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
+
+    .input-group label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #475569;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1.5px solid #cbd5e1;
       border-radius: 10px;
-      cursor: pointer; 
-      font-size: 0.9rem;
-      font-weight: 700; 
-      margin-bottom: 20px; 
-      display: inline-flex; 
-      align-items: center; 
-      gap: 8px;
+      font-size: 0.95rem;
+      outline: none;
       transition: all 0.2s;
     }
 
-    .btn-back:hover { 
-      background: #334155; 
-      color: #ffffff;
+    .input-group input:focus {
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
     }
 
-    .detail-title {
-      font-size: 1.35rem;
+    .btn-login {
+      width: 100%;
+      padding: 12px;
+      background: #10b981;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
       font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 10px;
+    }
+
+    .btn-login:hover {
+      background: #059669;
+    }
+
+    /* ================= DASHBOARD UTAMA ================= */
+    #dashboard-page {
+      display: none;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: #ffffff;
+      padding: 16px 20px;
+      border-radius: 16px;
       margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border: 1px solid #e2e8f0;
+    }
+
+    header h1 {
+      font-size: 1.2rem;
+      color: #0f172a;
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .chart-container { 
-      position: relative; 
-      height: 320px; 
-      width: 100%; 
-      margin-bottom: 24px; 
+    .status-badge {
+      background: #dcfce7;
+      color: #15803d;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    .control-box {
-      background: #0b0f19; 
-      padding: 20px 24px; 
-      border-radius: 14px; 
-      border: 1px solid #1e293b;
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      flex-wrap: wrap; 
-      gap: 16px;
+    /* KOTAK GRAFIK PISAH (HAMA & GULMA) */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
     }
 
-    .status-text-label { 
-      font-size: 0.8rem; 
-      font-weight: 600; 
-      color: #64748b; 
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-bottom: 4px;
+    .box-card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      border: 1px solid #e2e8f0;
     }
 
-    .status-text-val {
+    .box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .box-title {
       font-size: 1.1rem;
       font-weight: 700;
-      color: #4ade80;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .box-val {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .chart-box {
+      position: relative;
+      height: 220px;
+      width: 100%;
+      margin: 15px 0;
     }
 
     .btn-spray {
-      padding: 12px 24px; 
-      border: none; 
-      border-radius: 10px; 
-      font-size: 0.95rem; 
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
       font-weight: 700;
-      cursor: pointer; 
-      transition: all 0.2s; 
-      display: inline-flex; 
-      align-items: center; 
-      gap: 10px; 
-      color: #ffffff;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      transition: opacity 0.2s;
     }
 
-    .btn-spray:hover {
-      transform: scale(1.02);
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
+    .btn-spray:hover { opacity: 0.9; }
+
+    .btn-hama { background: #ef4444; }
+    .btn-gulma { background: #f59e0b; }
+
+    .spray-status {
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-top: 8px;
+      text-align: center;
+      color: #64748b;
     }
-
-    .btn-spray-hama { background-color: #ef4444; }
-    .btn-spray-hama:hover { background-color: #dc2626; }
-
-    .btn-spray-gulma { background-color: #f59e0b; }
-    .btn-spray-gulma:hover { background-color: #d97706; }
   </style>
 </head>
 <body>
 
-  <div class="container">
+  <!-- 1. HALAMAN LOGIN -->
+  <div id="login-page">
+    <div class="login-card">
+      <i class="fa-solid fa-wheat-awn logo-icon"></i>
+      <h2>Smart Farming</h2>
+      <p>Masuk untuk memantau sawah via LoRa</p>
+      
+      <form onsubmit="handleLogin(event)">
+        <div class="input-group">
+          <label>Username</label>
+          <input type="text" id="username" placeholder="Masukkan nama..." required>
+        </div>
+        <div class="input-group">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn-login">Masuk Dashboard</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. DASHBOARD UTAMA -->
+  <div id="dashboard-page">
     <header>
-      <h1><i class="fa-solid fa-microchip"></i> Smart Farming LoRa</h1>
+      <h1><i class="fa-solid fa-microchip" style="color: #10b981;"></i> Monitoring Sawah LoRa</h1>
       <div class="status-badge"><i class="fa-solid fa-wifi"></i> LoRa Connected</div>
     </header>
 
-    <!-- MENU UTAMA (DUA KOTAK TERPISAH) -->
-    <div id="main-menu">
-      <!-- Kotak Hama -->
-      <div class="menu-card card-hama" onclick="openPage('hama-page')">
-        <div class="card-icon"><i class="fa-solid fa-bug"></i></div>
-        <div class="card-title">Hama Serangga</div>
-        <div class="card-info">Batas Toleransi: 20 Ekor</div>
-        <div id="main-hama-val" class="card-val">8 Ekor</div>
-        <div class="card-action">Lihat Grafik & Semprot <i class="fa-solid fa-arrow-right"></i></div>
-      </div>
-
-      <!-- Kotak Gulma -->
-      <div class="menu-card card-gulma" onclick="openPage('gulma-page')">
-        <div class="card-icon"><i class="fa-solid fa-plant-wilt"></i></div>
-        <div class="card-title">Cakupan Gulma</div>
-        <div class="card-info">Batas Toleransi: 15% Area</div>
-        <div id="main-gulma-val" class="card-val">12%</div>
-        <div class="card-action">Lihat Grafik & Semprot <i class="fa-solid fa-arrow-right"></i></div>
-      </div>
-    </div>
-
-    <!-- HALAMAN DETAIL HAMA -->
-    <div id="hama-page" class="detail-page">
-      <button class="btn-back" onclick="closePage()"><i class="fa-solid fa-arrow-left"></i> Kembali ke Menu Utama</button>
-      <div class="detail-title" style="color: #f87171;"><i class="fa-solid fa-bug"></i> Grafik Deteksi Hama Serangga</div>
+    <div class="dashboard-grid">
       
-      <div class="chart-container">
-        <canvas id="hamaChart"></canvas>
+      <!-- KOTAK GRAFIK HAMA -->
+      <div class="box-card">
+        <div class="box-header">
+          <div class="box-title" style="color: #ef4444;"><i class="fa-solid fa-bug"></i> Hama Serangga</div>
+          <span style="font-size: 0.8rem; color: #64748b;">Max: 20 Ekor</span>
+        </div>
+        <div id="val-hama" class="box-val" style="color: #ef4444;">8 Ekor</div>
+        
+        <!-- Grafik Hama -->
+        <div class="chart-box">
+          <canvas id="hamaChart"></canvas>
+        </div>
+
+        <button class="btn-spray btn-hama" onclick="semprot('HAMA')">
+          <i class="fa-solid fa-spray-can-sparkles"></i> Semprot Pestisida
+        </button>
+        <div id="status-hama" class="spray-status">Status Pompa: Standby</div>
       </div>
 
-      <div class="control-box">
-        <div>
-          <div class="status-text-label">Status Pompa Pestisida</div>
-          <div id="hama-spray-status" class="status-text-val">STANDBY</div>
+      <!-- KOTAK GRAFIK GULMA -->
+      <div class="box-card">
+        <div class="box-header">
+          <div class="box-title" style="color: #f59e0b;"><i class="fa-solid fa-plant-wilt"></i> Cakupan Gulma</div>
+          <span style="font-size: 0.8rem; color: #64748b;">Max: 15%</span>
         </div>
-        <div>
-          <button class="btn-spray btn-spray-hama" onclick="simulasiSemprot('HAMA')">
-            <i class="fa-solid fa-spray-can-sparkles"></i> Semprot Pestisida
-          </button>
+        <div id="val-gulma" class="box-val" style="color: #f59e0b;">12%</div>
+        
+        <!-- Grafik Gulma -->
+        <div class="chart-box">
+          <canvas id="gulmaChart"></canvas>
         </div>
+
+        <button class="btn-spray btn-gulma" onclick="semprot('GULMA')">
+          <i class="fa-solid fa-shower"></i> Semprot Herbisida
+        </button>
+        <div id="status-gulma" class="spray-status">Status Pompa: Standby</div>
       </div>
+
     </div>
-
-    <!-- HALAMAN DETAIL GULMA -->
-    <div id="gulma-page" class="detail-page">
-      <button class="btn-back" onclick="closePage()"><i class="fa-solid fa-arrow-left"></i> Kembali ke Menu Utama</button>
-      <div class="detail-title" style="color: #fbbf24;"><i class="fa-solid fa-plant-wilt"></i> Grafik Deteksi Pertumbuhan Gulma</div>
-      
-      <div class="chart-container">
-        <canvas id="gulmaChart"></canvas>
-      </div>
-
-      <div class="control-box">
-        <div>
-          <div class="status-text-label">Status Pompa Herbisida</div>
-          <div id="gulma-spray-status" class="status-text-val">STANDBY</div>
-        </div>
-        <div>
-          <button class="btn-spray btn-spray-gulma" onclick="simulasiSemprot('GULMA')">
-            <i class="fa-solid fa-shower"></i> Semprot Herbisida
-          </button>
-        </div>
-      </div>
-    </div>
-
   </div>
 
   <script>
-    let hamaCount = 8;
-    let gulmaCount = 12;
+    let hamaVal = 8;
+    let gulmaVal = 12;
+    let hamaChart, gulmaChart;
 
-    let hamaChartInstance, gulmaChartInstance;
-
-    function openPage(pageId) {
-      document.getElementById('main-menu').style.display = 'none';
-      document.getElementById('hama-page').style.display = 'none';
-      document.getElementById('gulma-page').style.display = 'none';
-
-      document.getElementById(pageId).style.display = 'block';
-
-      if (pageId === 'hama-page') initHamaChart();
-      if (pageId === 'gulma-page') initGulmaChart();
+    function handleLogin(e) {
+      e.preventDefault();
+      document.getElementById('login-page').style.display = 'none';
+      document.getElementById('dashboard-page').style.display = 'block';
+      initCharts();
     }
 
-    function closePage() {
-      document.getElementById('hama-page').style.display = 'none';
-      document.getElementById('gulma-page').style.display = 'none';
-      document.getElementById('main-menu').style.display = 'grid';
+    function getTime() {
+      const d = new Date();
+      return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ':' + String(d.getSeconds()).padStart(2, '0');
     }
 
-    function getFormattedTime() {
-      const now = new Date();
-      return String(now.getHours()).padStart(2, '0') + ':' +
-             String(now.getMinutes()).padStart(2, '0') + ':' +
-             String(now.getSeconds()).padStart(2, '0');
-    }
-
-    // Grafik Hama (Dark Red Glow Theme)
-    function initHamaChart() {
-      if (hamaChartInstance) return;
-      const ctx = document.getElementById('hamaChart').getContext('2d');
-      hamaChartInstance = new Chart(ctx, {
+    function initCharts() {
+      // Grafik Hama
+      const ctxH = document.getElementById('hamaChart').getContext('2d');
+      hamaChart = new Chart(ctxH, {
         type: 'line',
         data: {
-          labels: [getFormattedTime()],
-          datasets: [
-            { label: 'Jumlah Hama (Ekor)', data: [hamaCount], borderColor: '#f87171', backgroundColor: 'rgba(248, 113, 113, 0.15)', fill: true, tension: 0.3, borderWidth: 3 },
-            { label: 'Batas Maksimal (20 Ekor)', data: [20], borderColor: '#ef4444', borderDash: [5, 5], pointRadius: 0, borderWidth: 1.5 }
-          ]
+          labels: [getTime()],
+          datasets: [{ label: 'Jumlah Hama', data: [hamaVal], borderColor: '#ef4444', backgroundColor: 'rgba(239, 68, 68, 0.1)', fill: true, tension: 0.3 }]
         },
-        options: { 
-          responsive: true, 
-          maintainAspectRatio: false, 
-          plugins: { legend: { labels: { color: '#94a3b8' } } }, 
-          scales: { 
-            y: { beginAtZero: true, grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } }, 
-            x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } } 
-          } 
-        }
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+      });
+
+      // Grafik Gulma
+      const ctxG = document.getElementById('gulmaChart').getContext('2d');
+      gulmaChart = new Chart(ctxG, {
+        type: 'line',
+        data: {
+          labels: [getTime()],
+          datasets: [{ label: 'Cakupan Gulma (%)', data: [gulmaVal], borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.1)', fill: true, tension: 0.3 }]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
       });
     }
 
-    // Grafik Gulma (Dark Amber Glow Theme)
-    function initGulmaChart() {
-      if (gulmaChartInstance) return;
-      const ctx = document.getElementById('gulmaChart').getContext('2d');
-      gulmaChartInstance = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: [getFormattedTime()],
-          datasets: [
-            { label: 'Cakupan Gulma (%)', data: [gulmaCount], borderColor: '#fbbf24', backgroundColor: 'rgba(251, 191, 36, 0.15)', fill: true, tension: 0.3, borderWidth: 3 },
-            { label: 'Batas Maksimal (15%)', data: [15], borderColor: '#d97706', borderDash: [5, 5], pointRadius: 0, borderWidth: 1.5 }
-          ]
-        },
-        options: { 
-          responsive: true, 
-          maintainAspectRatio: false, 
-          plugins: { legend: { labels: { color: '#94a3b8' } } }, 
-          scales: { 
-            y: { beginAtZero: true, grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } }, 
-            x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8' } } 
-          } 
-        }
-      });
-    }
-
-    // Simulasi Penyemprotan
-    function simulasiSemprot(tipe) {
+    function semprot(tipe) {
       if (tipe === 'HAMA') {
-        const status = document.getElementById('hama-spray-status');
-        status.innerText = "PENYEMPROTAN AKTIF...";
-        status.style.color = "#ef4444";
+        const st = document.getElementById('status-hama');
+        st.innerText = "Status Pompa: Menyemprot...";
+        st.style.color = "#ef4444";
         setTimeout(() => {
-          hamaCount = Math.max(0, hamaCount - 5);
-          document.getElementById('main-hama-val').innerText = hamaCount + ' Ekor';
-          status.innerText = "STANDBY";
-          status.style.color = "#4ade80";
-          updateChartData(hamaChartInstance, hamaCount, 20);
+          hamaVal = Math.max(0, hamaVal - 3);
+          document.getElementById('val-hama').innerText = hamaVal + ' Ekor';
+          st.innerText = "Status Pompa: Standby";
+          st.style.color = "#64748b";
+          updateChart(hamaChart, hamaVal);
         }, 2000);
       } else {
-        const status = document.getElementById('gulma-spray-status');
-        status.innerText = "PENYEMPROTAN AKTIF...";
-        status.style.color = "#fbbf24";
+        const st = document.getElementById('status-gulma');
+        st.innerText = "Status Pompa: Menyemprot...";
+        st.style.color = "#f59e0b";
         setTimeout(() => {
-          gulmaCount = Math.max(0, gulmaCount - 4);
-          document.getElementById('main-gulma-val').innerText = gulmaCount + '%';
-          status.innerText = "STANDBY";
-          status.style.color = "#4ade80";
-          updateChartData(gulmaChartInstance, gulmaCount, 15);
+          gulmaVal = Math.max(0, gulmaVal - 4);
+          document.getElementById('val-gulma').innerText = gulmaVal + '%';
+          st.innerText = "Status Pompa: Standby";
+          st.style.color = "#64748b";
+          updateChart(gulmaChart, gulmaVal);
         }, 2000);
       }
     }
 
-    function updateChartData(chart, value, threshold) {
-      if (!chart) return;
-      const timeStr = getFormattedTime();
-      chart.data.labels.push(timeStr);
-      chart.data.datasets[0].data.push(value);
-      chart.data.datasets[1].data.push(threshold);
-      if (chart.data.labels.length > 8) {
+    function updateChart(chart, val) {
+      chart.data.labels.push(getTime());
+      chart.data.datasets[0].data.push(val);
+      if (chart.data.labels.length > 6) {
         chart.data.labels.shift();
         chart.data.datasets[0].data.shift();
-        chart.data.datasets[1].data.shift();
       }
       chart.update();
     }
