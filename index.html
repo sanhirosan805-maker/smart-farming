@@ -112,7 +112,7 @@
 
     .progress-bg { background-color: #e2e8f0; border-radius: 8px; height: 14px; width: 100%; overflow: hidden; margin-top: 8px; }
     .progress-fill { background-color: #16a34a; height: 100%; width: 0%; transition: width 0.5s ease; }
-    .chart-container { position: relative; height: 300px; width: 100%; }
+    .chart-container { position: relative; height: 260px; width: 100%; }
 
     /* Tabel Klasifikasi OPT */
     .opt-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
@@ -195,13 +195,22 @@
         </div>
       </div>
 
-      <!-- Grafik & Control Log -->
-      <div class="grid" style="grid-template-columns: 2fr 1fr;">
+      <!-- Grafik Hama, Grafik Gulma & Control Log (Di-Grid Terpisah) -->
+      <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+        
+        <!-- KOTAK GRAFIK HAMA -->
         <div class="card">
-          <div class="card-title"><i class="fa-solid fa-chart-line"></i> Grafik Real-Time & Threshold</div>
-          <div class="chart-container"><canvas id="optChart"></canvas></div>
+          <div class="card-title" style="color: #0284c7;"><i class="fa-solid fa-bug"></i> Grafik Populasi Hama</div>
+          <div class="chart-container"><canvas id="pestChart"></canvas></div>
         </div>
 
+        <!-- KOTAK GRAFIK GULMA -->
+        <div class="card">
+          <div class="card-title" style="color: #d97706;"><i class="fa-solid fa-plant-wilt"></i> Grafik Cakupan Gulma</div>
+          <div class="chart-container"><canvas id="weedChart"></canvas></div>
+        </div>
+
+        <!-- KOTAK SIMULATOR & LOG -->
         <div class="card control-panel">
           <div class="card-title"><i class="fa-solid fa-gamepad"></i> Simulator / Kontrol Manual</div>
           
@@ -224,6 +233,7 @@
             > System Dashboard initialized...<br>
           </div>
         </div>
+
       </div>
 
       <!-- Tabel Identifikasi OPT -->
@@ -271,7 +281,7 @@
   </div>
 
   <script>
-    // Data Akun Login (Bisa kamu ganti di sini)
+    // Data Akun Login
     const USERNAME_BENAR = "admin";
     const PASSWORD_BENAR = "12345";
 
@@ -285,7 +295,7 @@
       if (userIn === USERNAME_BENAR && passIn === PASSWORD_BENAR) {
         document.getElementById('login-page').style.display = 'none';
         document.getElementById('dashboard-page').style.display = 'block';
-        initChart();
+        initCharts();
         addLog(`User '${userIn}' berhasil login.`);
       } else {
         errorMsg.style.display = 'block';
@@ -307,24 +317,39 @@
     let pestThreshold = 20;
     let weedThreshold = 15;
     let isSpraying = false;
-    let optChart;
+    let pestChart, weedChart;
 
-    function initChart() {
-      if (optChart) return; // Mencegah pembuatan ganda
-      const ctx = document.getElementById('optChart').getContext('2d');
-      optChart = new Chart(ctx, {
+    function initCharts() {
+      if (pestChart && weedChart) return; // Mencegah pembuatan ganda
+
+      // Grafik Hama Tersendiri
+      const ctxPest = document.getElementById('pestChart').getContext('2d');
+      pestChart = new Chart(ctxPest, {
         type: 'line',
         data: {
           labels: [],
           datasets: [
-            { label: 'Populasi Hama (Ekor)', data: [], borderColor: '#0284c7', backgroundColor: 'rgba(2, 132, 199, 0.08)', fill: true, tension: 0.3 },
-            { label: 'Batas Maks Hama (20)', data: [], borderColor: '#dc2626', borderWidth: 2, borderDash: [6, 4], fill: false, pointRadius: 0 },
-            { label: 'Cakupan Gulma (%)', data: [], borderColor: '#d97706', backgroundColor: 'rgba(217, 119, 6, 0.08)', fill: true, tension: 0.3 },
+            { label: 'Populasi Hama (Ekor)', data: [], borderColor: '#0284c7', backgroundColor: 'rgba(2, 132, 199, 0.1)', fill: true, tension: 0.3 },
+            { label: 'Batas Maks Hama (20)', data: [], borderColor: '#dc2626', borderWidth: 2, borderDash: [6, 4], fill: false, pointRadius: 0 }
+          ]
+        },
+        options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+      });
+
+      // Grafik Gulma Tersendiri
+      const ctxWeed = document.getElementById('weedChart').getContext('2d');
+      weedChart = new Chart(ctxWeed, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [
+            { label: 'Cakupan Gulma (%)', data: [], borderColor: '#d97706', backgroundColor: 'rgba(217, 119, 6, 0.1)', fill: true, tension: 0.3 },
             { label: 'Batas Maks Gulma (15%)', data: [], borderColor: '#f59e0b', borderWidth: 2, borderDash: [3, 3], fill: false, pointRadius: 0 }
           ]
         },
         options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
       });
+
       updateChart();
       updateWeedUI();
     }
@@ -344,23 +369,30 @@
     }
 
     function updateChart() {
-      if (!optChart) return;
+      if (!pestChart || !weedChart) return;
       const timeStr = getFormattedTime();
-      optChart.data.labels.push(timeStr);
-      
-      optChart.data.datasets[0].data.push(pestCount);
-      optChart.data.datasets[1].data.push(pestThreshold);
-      optChart.data.datasets[2].data.push(weedPercentage);
-      optChart.data.datasets[3].data.push(weedThreshold);
 
-      if (optChart.data.labels.length > 10) {
-        optChart.data.labels.shift();
-        optChart.data.datasets[0].data.shift();
-        optChart.data.datasets[1].data.shift();
-        optChart.data.datasets[2].data.shift();
-        optChart.data.datasets[3].data.shift();
+      // Update Grafik Hama
+      pestChart.data.labels.push(timeStr);
+      pestChart.data.datasets[0].data.push(pestCount);
+      pestChart.data.datasets[1].data.push(pestThreshold);
+      if (pestChart.data.labels.length > 10) {
+        pestChart.data.labels.shift();
+        pestChart.data.datasets[0].data.shift();
+        pestChart.data.datasets[1].data.shift();
       }
-      optChart.update();
+      pestChart.update();
+
+      // Update Grafik Gulma
+      weedChart.data.labels.push(timeStr);
+      weedChart.data.datasets[0].data.push(weedPercentage);
+      weedChart.data.datasets[1].data.push(weedThreshold);
+      if (weedChart.data.labels.length > 10) {
+        weedChart.data.labels.shift();
+        weedChart.data.datasets[0].data.shift();
+        weedChart.data.datasets[1].data.shift();
+      }
+      weedChart.update();
     }
 
     function updateWeedUI() {
