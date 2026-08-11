@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -65,7 +64,7 @@
     }
     header h1 { font-size: 1.4rem; display: flex; align-items: center; gap: 10px; }
 
-    .header-actions { display: flex; align-items: center; gap: 10px; }
+    .header-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 
     .status-badge {
       background-color: #22c55e; color: white; padding: 6px 14px; border-radius: 20px;
@@ -74,11 +73,12 @@
     .status-badge.warning { background-color: #ef4444; animation: pulse 1.5s infinite; }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-    .btn-logout {
+    .btn-header {
       background-color: rgba(255, 255, 255, 0.2); color: white; border: none;
       padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: bold;
       cursor: pointer; transition: background 0.2s; display: flex; align-items: center; gap: 6px;
     }
+    .btn-header:hover { background-color: rgba(255, 255, 255, 0.35); }
     .btn-logout:hover { background-color: #ef4444; }
 
     /* Layout Grid */
@@ -99,6 +99,8 @@
     .btn-weed { background-color: #d97706; color: white; }
     .btn-weed:hover { background-color: #b45309; }
     .btn-spray { background-color: #16a34a; color: white; }
+    .btn-export { background-color: #475569; color: white; margin-top: 5px; }
+    .btn-export:hover { background-color: #334155; }
 
     /* Mode Demo Toggle */
     .btn-demo-toggle {
@@ -119,16 +121,46 @@
       border-radius: 6px; color: #991b1b; margin-bottom: 20px; display: none;
     }
 
+    /* OPSI 1: IoT Hardware Panel Style */
+    .iot-status-card {
+      background: #0f172a; color: white; padding: 15px; border-radius: 12px; margin-bottom: 20px;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;
+    }
+    .iot-info { display: flex; align-items: center; gap: 15px; font-size: 0.85rem; }
+    .iot-indicator { width: 10px; height: 10px; border-radius: 50%; background-color: #22c55e; display: inline-block; }
+    .iot-indicator.offline { background-color: #ef4444; }
+
+    /* OPSI 2: Live Camera & AI Scanner Box */
+    .camera-box {
+      position: relative; width: 100%; height: 210px; background-color: #020617;
+      border-radius: 8px; overflow: hidden; display: flex; justify-content: center; align-items: center;
+      border: 1px solid #334155;
+    }
+    .camera-overlay {
+      position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.6);
+      color: #22c55e; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-family: monospace;
+    }
+    .scan-line {
+      position: absolute; width: 100%; height: 2px; background: rgba(34, 197, 94, 0.8);
+      box-shadow: 0 0 8px #22c55e; animation: scan 3s infinite linear;
+    }
+    @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+    .bounding-box {
+      position: absolute; border: 2px solid #ef4444; background: rgba(239, 68, 68, 0.2);
+      border-radius: 4px; display: flex; align-items: flex-start; padding: 2px;
+    }
+    .bounding-label { background: #ef4444; color: white; font-size: 0.65rem; padding: 1px 4px; font-weight: bold; }
+
     /* Terminal Log */
     .log-box {
       background-color: #0f172a; color: #38bdf8; border-radius: 6px; padding: 12px;
-      font-family: 'Consolas', 'Courier New', Courier, monospace; font-size: 0.8rem; height: 180px; overflow-y: auto;
+      font-family: 'Consolas', 'Courier New', Courier, monospace; font-size: 0.8rem; height: 160px; overflow-y: auto;
       border: 1px solid #1e293b;
     }
 
     .progress-bg { background-color: #e2e8f0; border-radius: 8px; height: 14px; width: 100%; overflow: hidden; margin-top: 8px; }
     .progress-fill { background-color: #16a34a; height: 100%; width: 0%; transition: width 0.5s ease; }
-    .chart-container { position: relative; height: 260px; width: 100%; }
+    .chart-container { position: relative; height: 240px; width: 100%; }
 
     /* Tabel Klasifikasi OPT */
     .opt-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
@@ -138,6 +170,13 @@
     .badge-hama { background-color: #fecaca; color: #991b1b; }
     .badge-gulma { background-color: #fef08a; color: #854d0e; }
     .badge-sahabat { background-color: #bbf7d0; color: #166534; }
+
+    /* OPSI 4: Modal Popup Settings Threshold */
+    .modal-overlay {
+      position: fixed; top:0; left:0; width:100%; height:100%;
+      background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 10000;
+    }
+    .modal-card { background: white; padding: 25px; border-radius: 12px; width: 100%; max-width: 400px; }
   </style>
 </head>
 <body>
@@ -175,14 +214,30 @@
       <header>
         <h1><i class="fa-solid fa-microchip"></i> Smart Farming - Precision OPT Control</h1>
         <div class="header-actions">
+          <!-- OPSI 4: Tombol Pengaturan Threshold -->
+          <button class="btn-header" onclick="openThresholdModal()">
+            <i class="fa-solid fa-sliders"></i> Set Threshold
+          </button>
           <div id="system-status" class="status-badge">
             <i class="fa-solid fa-circle-check"></i> Status: Aman
           </div>
-          <button class="btn-logout" onclick="handleLogout()">
+          <button class="btn-header btn-logout" onclick="handleLogout()">
             <i class="fa-solid fa-power-off"></i> Keluar
           </button>
         </div>
       </header>
+
+      <!-- OPSI 1: Panel Status Hardware ESP32/Mikrokontroler -->
+      <div class="iot-status-card">
+        <div class="iot-info">
+          <div><span id="iot-dot" class="iot-indicator"></span> <strong>ESP32 Node:</strong> <span id="iot-status-text">TERHUBUNG (HTTP/MQTT)</span></div>
+          <div><i class="fa-solid fa-wifi"></i> <strong>IP:</strong> 192.168.1.105</div>
+          <div><i class="fa-solid fa-bolt"></i> <strong>Tegangan Relay:</strong> 12V DC</div>
+        </div>
+        <button class="btn btn-pest" style="padding: 4px 10px; font-size: 0.75rem;" onclick="testESP32Connection()">
+          <i class="fa-solid fa-arrows-rotate"></i> Cek Koneksi Hardware
+        </button>
+      </div>
 
       <!-- Alert Box -->
       <div id="alert-box" class="notification-box">
@@ -196,7 +251,7 @@
             <span class="card-title-text"><i class="fa-solid fa-bug"></i> Hama Serangga Aktif</span>
           </div>
           <div id="pest-count" class="card-value">0 ekor</div>
-          <div style="font-size: 0.75rem; color: #dc2626; font-weight: bold; margin-top: 4px;">Batas Toleransi: 20 Ekor</div>
+          <div style="font-size: 0.75rem; color: #dc2626; font-weight: bold; margin-top: 4px;">Batas Toleransi: <span id="lbl-pest-thresh">20</span> Ekor</div>
         </div>
 
         <div class="card">
@@ -205,7 +260,7 @@
           </div>
           <div id="weed-count" class="card-value">5%</div>
           <div class="progress-bg"><div id="weed-bar" class="progress-fill" style="width: 5%;"></div></div>
-          <div style="font-size: 0.75rem; color: #d97706; font-weight: bold; margin-top: 4px;">Batas Toleransi: 15% Area</div>
+          <div style="font-size: 0.75rem; color: #d97706; font-weight: bold; margin-top: 4px;">Batas Toleransi: <span id="lbl-weed-thresh">15</span>% Area</div>
         </div>
 
         <div class="card">
@@ -217,13 +272,32 @@
         </div>
       </div>
 
-      <!-- Grafik Hama, Grafik Gulma & Control Log (Di-Grid Terpisah) -->
-      <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));">
+      <!-- OPSI 2 & GRAFIK: Live Camera Feed + AI Detection -->
+      <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));">
         
+        <!-- OPSI 2: Kotak Camera Scanner Live AI -->
+        <div class="card">
+          <div class="card-title" style="color: #16a34a;">
+            <span class="card-title-text"><i class="fa-solid fa-camera"></i> Live Optical Scanner (AI)</span>
+          </div>
+          <div class="camera-box">
+            <div class="scan-line"></div>
+            <div class="camera-overlay">CAM-01 [ACTIVE] | 1080p AI Model</div>
+            <!-- Bounding Box Deteksi (Simulasi) -->
+            <div id="ai-box-1" class="bounding-box" style="top: 30%; left: 25%; width: 70px; height: 60px; display: none;">
+              <span class="bounding-label">Hama 94%</span>
+            </div>
+            <div id="ai-box-2" class="bounding-box" style="top: 55%; left: 60%; width: 90px; height: 50px; border-color: #f59e0b; background: rgba(245, 158, 11, 0.2); display: none;">
+              <span class="bounding-label" style="background:#f59e0b;">Gulma 88%</span>
+            </div>
+            <i class="fa-solid fa-eye" style="font-size: 3rem; color: #1e293b;"></i>
+          </div>
+        </div>
+
         <!-- KOTAK GRAFIK HAMA -->
         <div class="card">
           <div class="card-title" style="color: #0284c7;">
-            <span class="card-title-text"><i class="fa-solid fa-bug"></i> Grafik Populasi Hama</span>
+            <span class="card-title-text"><i class="fa-solid fa-chart-line"></i> Grafik Populasi Hama</span>
           </div>
           <div class="chart-container"><canvas id="pestChart"></canvas></div>
         </div>
@@ -231,26 +305,28 @@
         <!-- KOTAK GRAFIK GULMA -->
         <div class="card">
           <div class="card-title" style="color: #d97706;">
-            <span class="card-title-text"><i class="fa-solid fa-plant-wilt"></i> Grafik Cakupan Gulma</span>
+            <span class="card-title-text"><i class="fa-solid fa-chart-area"></i> Grafik Cakupan Gulma</span>
           </div>
           <div class="chart-container"><canvas id="weedChart"></canvas></div>
         </div>
 
-        <!-- KOTAK SIMULATOR & LOG -->
+      </div>
+
+      <!-- KOTAK SIMULATOR & LOG DENGAN TOMBOL EKSPOR (OPSI 3) -->
+      <div class="grid" style="grid-template-columns: 1fr;">
         <div class="card control-panel">
           <div class="card-title">
-            <span class="card-title-text"><i class="fa-solid fa-sliders"></i> Panel Kontrol Sprayer</span>
-            <button class="btn-demo-toggle" onclick="toggleDemoMode()" title="Klik untuk menampilkan/menyembunyikan tombol simulasi saat presentasi">
+            <span class="card-title-text"><i class="fa-solid fa-sliders"></i> Panel Kontrol Sprayer & Audit Trail</span>
+            <button class="btn-demo-toggle" onclick="toggleDemoMode()">
               <i class="fa-solid fa-vial"></i> Mode Presentasi
             </button>
           </div>
           
-          <!-- Tombol Penyemprotan Manual (Tetap Tampil) -->
           <button id="btn-spray-toggle" class="btn btn-spray" onclick="toggleManualSpray()">
-            <i class="fa-solid fa-spray-can"></i> Semprot Manual
+            <i class="fa-solid fa-spray-can"></i> Semprot Manual (Relay ON)
           </button>
 
-          <!-- Tombol Simulasi Hama & Gulma (Sembunyi secara default, bisa dimunculkan saat presentasi) -->
+          <!-- Tombol Simulasi Hama & Gulma -->
           <div id="demo-box" class="demo-controls">
             <div style="font-size: 0.75rem; font-weight: bold; color: #64748b;"><i class="fa-solid fa-flask"></i> Simulasi Input Sensor:</div>
             <button class="btn btn-pest" onclick="simulatePest()">
@@ -261,14 +337,17 @@
             </button>
           </div>
 
-          <div style="font-size: 0.8rem; font-weight: bold; color: #475569; margin-top: 4px;">
-            Audit Trail / Catatan Waktu:
+          <div style="font-size: 0.8rem; font-weight: bold; color: #475569; margin-top: 4px; display: flex; justify-content: space-between; align-items: center;">
+            <span>Audit Trail / Catatan Waktu:</span>
+            <!-- OPSI 3: Tombol Ekspor CSV -->
+            <button class="btn btn-export" onclick="exportLogToCSV()" style="padding: 4px 10px; font-size: 0.75rem;">
+              <i class="fa-solid fa-file-csv"></i> Unduh Laporan Log (CSV)
+            </button>
           </div>
           <div id="activity-log" class="log-box">
             > System Dashboard initialized...<br>
           </div>
         </div>
-
       </div>
 
       <!-- Tabel Identifikasi OPT -->
@@ -317,10 +396,38 @@
     </div>
   </div>
 
+  <!-- OPSI 4: Modal Input Pengaturan Batas Toleransi (Threshold) -->
+  <div id="threshold-modal" class="modal-overlay">
+    <div class="modal-card">
+      <h3 style="margin-bottom: 15px;"><i class="fa-solid fa-gear"></i> Pengaturan Toleransi OPT</h3>
+      <div class="input-group">
+        <label>Batas Maksimum Hama (Ekor):</label>
+        <input type="number" id="input-pest-thresh" value="20">
+      </div>
+      <div class="input-group">
+        <label>Batas Maksimum Gulma (%):</label>
+        <input type="number" id="input-weed-thresh" value="15">
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button class="btn btn-spray" style="flex:1;" onclick="saveThresholds()">Simpan</button>
+        <button class="btn btn-export" style="flex:1;" onclick="closeThresholdModal()">Batal</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // Data Akun Login
     const USERNAME_BENAR = "admin";
     const PASSWORD_BENAR = "12345";
+
+    // Variable Data Utama
+    let pestCount = 0;
+    let weedPercentage = 5;
+    let pestThreshold = 20;
+    let weedThreshold = 15;
+    let isSpraying = false;
+    let pestChart, weedChart;
+    let logHistory = []; // Array Penyimpan Log untuk Ekspor CSV (OPSI 3)
 
     // Fungsi Login
     function handleLogin(event) {
@@ -348,7 +455,7 @@
       document.getElementById('login-error').style.display = 'none';
     }
 
-    // Toggle Tampilan Tombol Mode Presentasi/Demo
+    // Toggle Mode Presentasi Demo
     function toggleDemoMode() {
       const demoBox = document.getElementById('demo-box');
       if (demoBox.style.display === 'flex') {
@@ -360,18 +467,62 @@
       }
     }
 
-    // Variable Data Utama
-    let pestCount = 0;
-    let weedPercentage = 5;
-    let pestThreshold = 20;
-    let weedThreshold = 15;
-    let isSpraying = false;
-    let pestChart, weedChart;
+    // OPSI 1: Cek Koneksi Mikrokontroler ESP32
+    function testESP32Connection() {
+      addLog(`[ESP32] Mengirim ping ke 192.168.1.105...`);
+      setTimeout(() => {
+        addLog(`[ESP32] PING OK - Latency: 12ms. Status Relay Normal.`, true);
+      }, 1000);
+    }
+
+    // OPSI 4: Modal Pengaturan Threshold
+    function openThresholdModal() {
+      document.getElementById('input-pest-thresh').value = pestThreshold;
+      document.getElementById('input-weed-thresh').value = weedThreshold;
+      document.getElementById('threshold-modal').style.display = 'flex';
+    }
+
+    function closeThresholdModal() {
+      document.getElementById('threshold-modal').style.display = 'none';
+    }
+
+    function saveThresholds() {
+      pestThreshold = parseInt(document.getElementById('input-pest-thresh').value) || 20;
+      weedThreshold = parseInt(document.getElementById('input-weed-thresh').value) || 15;
+      
+      document.getElementById('lbl-pest-thresh').innerText = pestThreshold;
+      document.getElementById('lbl-weed-thresh').innerText = weedThreshold;
+      
+      addLog(`Pengaturan diperbarui: Batas Hama = ${pestThreshold}, Batas Gulma = ${weedThreshold}%`);
+      closeThresholdModal();
+      checkRules();
+      updateChart();
+    }
+
+    // OPSI 3: Ekspor Log Ke File CSV
+    function exportLogToCSV() {
+      if (logHistory.length === 0) {
+        alert("Belum ada log aktivitas untuk diunduh!");
+        return;
+      }
+      let csvContent = "data:text/csv;charset=utf-8,Waktu,Aktivitas\n";
+      logHistory.forEach(row => {
+        csvContent += `"${row.time}","${row.message.replace(/"/g, '""')}"\n`;
+      });
+
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `Laporan_SmartFarming_${new Date().toISOString().slice(0,10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      addLog(`Laporan CSV berhasil diunduh.`);
+    }
 
     function initCharts() {
       if (pestChart && weedChart) return;
 
-      // Grafik Hama
       const ctxPest = document.getElementById('pestChart').getContext('2d');
       pestChart = new Chart(ctxPest, {
         type: 'line',
@@ -379,13 +530,12 @@
           labels: [],
           datasets: [
             { label: 'Populasi Hama (Ekor)', data: [], borderColor: '#0284c7', backgroundColor: 'rgba(2, 132, 199, 0.1)', fill: true, tension: 0.3 },
-            { label: 'Batas Maks Hama (20)', data: [], borderColor: '#dc2626', borderWidth: 2, borderDash: [6, 4], fill: false, pointRadius: 0 }
+            { label: 'Batas Maks Hama', data: [], borderColor: '#dc2626', borderWidth: 2, borderDash: [6, 4], fill: false, pointRadius: 0 }
           ]
         },
         options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
       });
 
-      // Grafik Gulma
       const ctxWeed = document.getElementById('weedChart').getContext('2d');
       weedChart = new Chart(ctxWeed, {
         type: 'line',
@@ -393,7 +543,7 @@
           labels: [],
           datasets: [
             { label: 'Cakupan Gulma (%)', data: [], borderColor: '#d97706', backgroundColor: 'rgba(217, 119, 6, 0.1)', fill: true, tension: 0.3 },
-            { label: 'Batas Maks Gulma (15%)', data: [], borderColor: '#f59e0b', borderWidth: 2, borderDash: [3, 3], fill: false, pointRadius: 0 }
+            { label: 'Batas Maks Gulma', data: [], borderColor: '#f59e0b', borderWidth: 2, borderDash: [3, 3], fill: false, pointRadius: 0 }
           ]
         },
         options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
@@ -413,6 +563,8 @@
     function addLog(message, highlight = false) {
       const logBox = document.getElementById('activity-log');
       const timeStr = getFormattedTime();
+      logHistory.push({ time: timeStr, message: message }); // Simpan ke array CSV
+      
       const style = highlight ? "color: #facc15; font-weight: bold;" : "";
       logBox.innerHTML = `<span style="${style}">[${timeStr}] ${message}</span><br>` + logBox.innerHTML;
     }
@@ -457,6 +609,10 @@
       let isPestDanger = pestCount >= pestThreshold;
       let isWeedDanger = weedPercentage >= weedThreshold;
 
+      // OPSI 2: Tampilkan / Sembunyikan Bounding Box AI Kamera
+      document.getElementById('ai-box-1').style.display = isPestDanger ? 'flex' : 'none';
+      document.getElementById('ai-box-2').style.display = isWeedDanger ? 'flex' : 'none';
+
       if (isPestDanger || isWeedDanger) {
         alertBox.style.display = 'block';
         systemStatus.className = 'status-badge warning';
@@ -466,10 +622,10 @@
           alertText.innerHTML = '<b>WASPADA GANDA!</b> Hama dan Gulma melebihi batas toleransi!';
           if (!isSpraying) startSpraying("Pestisida + Herbisida", "OTOMATIS");
         } else if (isPestDanger) {
-          alertText.innerHTML = '<b>WASPADA HAMA!</b> Hama serangga melebihi batas (20 Ekor). Menyemprotkan Pestisida...';
+          alertText.innerHTML = `<b>WASPADA HAMA!</b> Hama serangga melebihi batas (${pestThreshold} Ekor). Menyemprotkan Pestisida...`;
           if (!isSpraying) startSpraying("Pestisida", "OTOMATIS");
         } else {
-          alertText.innerHTML = '<b>WASPADA GULMA!</b> Rumput liar melebihi batas (15%). Menyemprotkan Herbisida...';
+          alertText.innerHTML = `<b>WASPADA GULMA!</b> Rumput liar melebihi batas (${weedThreshold}%). Menyemprotkan Herbisida...`;
           if (!isSpraying) startSpraying("Herbisida", "OTOMATIS");
         }
       } else {
