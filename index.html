@@ -144,7 +144,7 @@
     /* KOTAK GRAFIK PISAH (HAMA & GULMA) */
     .dashboard-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
       gap: 20px;
     }
 
@@ -160,7 +160,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
     }
 
     .box-title {
@@ -171,15 +171,43 @@
       gap: 8px;
     }
 
+    /* PENJELASAN KOTAK (DESKRIPSI & CAIRAN) */
+    .info-desc {
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 0.8rem;
+      color: #475569;
+      line-height: 1.4;
+      margin-bottom: 12px;
+      border: 1px dashed #cbd5e1;
+    }
+
+    .info-desc strong {
+      color: #0f172a;
+    }
+
+    .liquid-tag {
+      display: inline-block;
+      margin-top: 5px;
+      font-weight: 600;
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    .liquid-hama { background: #fee2e2; color: #991b1b; }
+    .liquid-gulma { background: #fef3c7; color: #92400e; }
+
     .box-val {
       font-size: 1.8rem;
       font-weight: 800;
-      margin-bottom: 10px;
+      margin-bottom: 5px;
     }
 
     .chart-box {
       position: relative;
-      height: 220px;
+      height: 200px;
       width: 100%;
       margin: 15px 0;
     }
@@ -252,6 +280,13 @@
           <div class="box-title" style="color: #ef4444;"><i class="fa-solid fa-bug"></i> Hama Serangga</div>
           <span style="font-size: 0.8rem; color: #64748b;">Max: 20 Ekor</span>
         </div>
+        
+        <!-- Penjelasan Hama & Cairan -->
+        <div class="info-desc">
+          <strong>Pengertian:</strong> Hewan pengganggu (seperti wereng, walang sangit, belalang) yang merusak batang dan bulir padi.<br>
+          <span class="liquid-tag liquid-hama"><i class="fa-solid fa-flask"></i> Cairan Penindas: Pestisida / Insektisida</span>
+        </div>
+
         <div id="val-hama" class="box-val" style="color: #ef4444;">8 Ekor</div>
         
         <!-- Grafik Hama -->
@@ -260,7 +295,7 @@
         </div>
 
         <button class="btn-spray btn-hama" onclick="semprot('HAMA')">
-          <i class="fa-solid fa-spray-can-sparkles"></i> Semprot Pestisida
+          <i class="fa-solid fa-spray-can-sparkles"></i> Semprot Pestisida Hama
         </button>
         <div id="status-hama" class="spray-status">Status Pompa: Standby</div>
       </div>
@@ -271,6 +306,13 @@
           <div class="box-title" style="color: #f59e0b;"><i class="fa-solid fa-plant-wilt"></i> Cakupan Gulma</div>
           <span style="font-size: 0.8rem; color: #64748b;">Max: 15%</span>
         </div>
+
+        <!-- Penjelasan Gulma & Cairan -->
+        <div class="info-desc">
+          <strong>Pengertian:</strong> Tumbuhan liar (seperti rumput teki, genjer) yang berebut nutrisi, air, dan sinar matahari dengan padi.<br>
+          <span class="liquid-tag liquid-gulma"><i class="fa-solid fa-flask"></i> Cairan Penindas: Herbisida</span>
+        </div>
+
         <div id="val-gulma" class="box-val" style="color: #f59e0b;">12%</div>
         
         <!-- Grafik Gulma -->
@@ -279,7 +321,7 @@
         </div>
 
         <button class="btn-spray btn-gulma" onclick="semprot('GULMA')">
-          <i class="fa-solid fa-shower"></i> Semprot Herbisida
+          <i class="fa-solid fa-shower"></i> Semprot Herbisida Gulma
         </button>
         <div id="status-gulma" class="spray-status">Status Pompa: Standby</div>
       </div>
@@ -331,7 +373,7 @@
     function semprot(tipe) {
       if (tipe === 'HAMA') {
         const st = document.getElementById('status-hama');
-        st.innerText = "Status Pompa: Menyemprot...";
+        st.innerText = "Status Pompa Pestisida: Menyemprot...";
         st.style.color = "#ef4444";
         setTimeout(() => {
           hamaVal = Math.max(0, hamaVal - 3);
@@ -342,7 +384,7 @@
         }, 2000);
       } else {
         const st = document.getElementById('status-gulma');
-        st.innerText = "Status Pompa: Menyemprot...";
+        st.innerText = "Status Pompa Herbisida: Menyemprot...";
         st.style.color = "#f59e0b";
         setTimeout(() => {
           gulmaVal = Math.max(0, gulmaVal - 4);
